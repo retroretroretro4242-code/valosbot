@@ -1,4 +1,3 @@
-
 def calculate_elo(current, opponent, win=True):
 
     change = 25
