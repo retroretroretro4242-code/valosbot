@@ -1,9 +1,37 @@
+import os
+import discord
+from discord.ext import commands
+from database import Database
 
-def calculate_elo(current, opponent, win=True):
+TOKEN = os.getenv("TOKEN")  # Railway’den gelecek
 
-    change = 25
+intents = discord.Intents.default()
+intents.members = True
+intents.guilds = True
 
-    if win:
-        return current + change
-    else:
-        return current - change
+bot = commands.Bot(command_prefix="!", intents=intents)
+db = Database()
+
+COGS = [
+    "cogs.teams",
+    "cogs.matches",
+    "cogs.tournaments",
+    "cogs.leaderboard",
+    "cogs.admin"
+]
+
+@bot.event
+async def on_ready():
+    for cog in COGS:
+        try:
+            await bot.load_extension(cog)
+            print(f"Loaded {cog}")
+        except Exception as e:
+            print(f"Failed to load {cog}: {e}")
+
+    await bot.tree.sync()
+    print(f"{bot.user} is online and ready!")
+
+bot.db = db
+
+bot.run(TOKEN)
