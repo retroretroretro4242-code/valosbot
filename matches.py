@@ -1,4 +1,3 @@
-
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -14,7 +13,10 @@ class Matches(commands.Cog):
         team = self.bot.db.get_team(interaction.user.id)
 
         if not team:
-            await interaction.response.send_message("You don't own a team.", ephemeral=True)
+            await interaction.response.send_message(
+                "❌ You don't own a team.",
+                ephemeral=True
+            )
             return
 
         current_elo = team[2]
@@ -23,10 +25,12 @@ class Matches(commands.Cog):
         self.bot.db.update_elo(interaction.user.id, new_elo)
 
         embed = discord.Embed(
-            title="Match Result",
-            description=f"ELO increased to {new_elo}",
+            title="⚔️ Match Result",
+            description=f"🏆 Victory reported!\n\n📈 New ELO: **{new_elo}**",
             color=discord.Color.green()
         )
+
+        embed.set_footer(text="PRX | Prime Raiders")
 
         await interaction.response.send_message(embed=embed)
 
