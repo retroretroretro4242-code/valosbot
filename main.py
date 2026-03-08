@@ -3,14 +3,15 @@ import discord
 from discord.ext import commands
 from database import Database
 
-TOKEN = os.getenv("TOKEN")  # Railway’den gelecek
+TOKEN = os.getenv("TOKEN")
 
 intents = discord.Intents.default()
 intents.members = True
 intents.guilds = True
+intents.message_content = False
 
 bot = commands.Bot(command_prefix="!", intents=intents)
-db = Database()
+bot.db = Database()
 
 COGS = [
     "cogs.teams",
@@ -22,16 +23,19 @@ COGS = [
 
 @bot.event
 async def on_ready():
+    print(f"✅ {bot.user} aktif!")
+
     for cog in COGS:
         try:
             await bot.load_extension(cog)
-            print(f"Loaded {cog}")
+            print(f"✔️ {cog} yüklendi")
         except Exception as e:
-            print(f"Failed to load {cog}: {e}")
+            print(f"❌ {cog} yüklenemedi: {e}")
 
-    await bot.tree.sync()
-    print(f"{bot.user} is online and ready!")
-
-bot.db = db
+    try:
+        await bot.tree.sync()
+        print("⚡ Slash komutlar sync edildi!")
+    except Exception as e:
+        print(f"⚠️ Slash komut sync hatası: {e}")
 
 bot.run(TOKEN)
